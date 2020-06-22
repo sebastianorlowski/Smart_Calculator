@@ -2,62 +2,54 @@ import java.util.Scanner;
 
 public class Calculator {
 
-    private static void displayHelp() {
-        System.out.println("The program calculates additions and subtractions. Be careful, even numbers of minuses" +
-                "gives plus, and the odd number of minuses give minus.");
-    }
-
-    private static int sum(String[] arr) {
-        int sum = Integer.parseInt(arr[0]);
-        for (int i = 1; i < arr.length; i+=2) {
-            if (i != arr.length - 1) {
-                if (arr[i].matches("\\D+")) {
-                    sum += Integer.parseInt(arr[i + 1]) * operator(arr[i]);
-                }
-            }
-        }
-        return sum;
-    }
-
-    private static int operator(String s) {
-        String pattern = "-+";
-        if (s.matches(pattern)) {
-            if (s.length() % 2 == 0) {
-                return 1;
-            } else {
-                return -1;
-            }
-        } else {
-            return 1;
-        }
-    }
-
-    private static void result(String s) {
-        String[] tempArr = s.split("\\s+");
-        if (s.equals("/exit")) {
-            System.out.println("Bye!");
-            System.exit(0);
-        } else {
-            if (s.equals("/help")) {
-                displayHelp();
-            } else {
-                if (tempArr.length > 1) {
-                    System.out.println(sum(tempArr));
-                } else if (tempArr.length == 1) {
-                    System.out.println(tempArr[0]);
-                }
-            }
-        }
-    }
-
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        while (true) {
-            String temp = scanner.nextLine();
-            while (temp.isEmpty()) {
-                temp = scanner.nextLine();
+        String input = "";
+
+        while (!"/exit".equals(input)) {
+            input = scanner.nextLine();
+
+            if (input.startsWith("/")) {
+                switch (input) {
+                    case "/exit":
+                        System.out.println("Bye!");
+                        break;
+                    case "/help":
+                        System.out.println("The program can calculate expressions with multiple additions and subtractions");
+                        break;
+                    default:
+                        System.out.println("Unknown command");
+                }
+            } else if (!"".equals(input)){
+                System.out.println(sum(input));
             }
-            result(temp);
         }
+    }
+
+    public static String sum(String input) {
+        String[] inputArray = input.split("\\s+");
+        int answer = 0;
+
+        try {
+            answer = Integer.parseInt(inputArray[0]);
+            if (inputArray.length == 1) {
+                return (answer + "");
+            }
+            for (int i = 1; i < inputArray.length; i += 2) {
+                answer = operation(answer, inputArray[i], Integer.parseInt(inputArray[i + 1]));
+            }
+            return (answer + "");
+        }
+        catch (Exception e) {
+            return "Invalid expression";
+        }
+    }
+
+    public static int operation(int a, String operand, int b) {
+        if (operand.matches("\\++")) {
+            return a + b;
+        } else if (operand.length() % 2 == 0) {
+            return a + b;
+        } else return a - b;
     }
 }
